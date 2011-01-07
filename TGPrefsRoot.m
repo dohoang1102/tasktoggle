@@ -141,8 +141,9 @@
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (buttonIndex == 1)
-		[sharedTaskToggle reset];
+	if (buttonIndex == 1) {
+		[[CPDistributedMessagingCenter centerNamed:@"dizzytech.tasktoggle"] sendMessageName:@"resetPreferences" userInfo:nil];
+	}
 }
 
 @end

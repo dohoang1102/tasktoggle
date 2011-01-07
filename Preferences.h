@@ -1,6 +1,7 @@
 #import <UIKit/UIKit.h>
 #import <Preferences/PSViewController.h>
 #import <QuartzCore/QuartzCore.h>
+#import <AppSupport/AppSupport.h>
 #import "Tweak.h"
 
 extern DZTaskToggleController *sharedTaskToggle;

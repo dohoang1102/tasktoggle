@@ -25,7 +25,7 @@
 
 - (void)viewDidLoad {
 	self.tableView.allowsSelection = YES;
-	NSString *activeTheme = [[sharedTaskToggle currentThemePath] lastPathComponent];
+	NSString *activeTheme = [sharedTaskToggle.currentThemePath lastPathComponent];
 	NSInteger row = [self.themeArray indexOfObjectIdenticalTo:activeTheme];
 	NSIndexPath *activeIndexPath = [NSIndexPath indexPathForRow:row inSection:0];
 	[self.tableView selectRowAtIndexPath:activeIndexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
@@ -39,13 +39,16 @@
 	return [self.themeArray count];
 }
 
-- (void)tableView:(UITableView *)aTableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	[sharedTaskToggle setObject:[self.themeArray objectAtIndex:indexPath.row] forPreference:@"TaskToggleTheme"];
+- (void)tableView:(UITableView *)aTableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {	
+	NSDictionary *info = [NSDictionary dictionaryWithObjectsAndKeys:[self.themeArray objectAtIndex:indexPath.row], @"value", @"TaskToggleTheme", @"preference", nil];
+	[[CPDistributedMessagingCenter centerNamed:@"dizzytech.tasktoggle"] sendMessageName:@"setObjectForPreference" userInfo:info];
 }
 
 - (void)tableView:(UITableView *)aTableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath {
-	NSString *themeName = [self.themeArray objectAtIndex:indexPath.row];
-	[sharedTaskToggle activateTogglesWithThemeName:themeName];
+	NSString *themeName = [self.themeArray objectAtIndex:indexPath.row];	
+	NSDictionary *info = [NSDictionary dictionaryWithObject:themeName forKey:@"name"];
+	[[CPDistributedMessagingCenter centerNamed:@"dizzytech.tasktoggle"] sendMessageName:@"activateWithTheme" userInfo:info];
+	
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {	

@@ -28,6 +28,17 @@ CHDeclareClass(SpringBoard);
 
 -(id)init {
 	if ((self = [super init])) {
+		CPDistributedMessagingCenter *messagingCenter = [CPDistributedMessagingCenter centerNamed:@"dizzytech.tasktoggle"];
+		[messagingCenter runServerOnCurrentThread];
+		// Remote messages to id<LAListener> (with event)
+		[messagingCenter registerForMessageName:@"resetPreferences" target:self selector:@selector(_reset)];
+		[messagingCenter registerForMessageName:@"reloadToggles" target:self selector:@selector(_reloadToggles)];
+		[messagingCenter registerForMessageName:@"reloadIcons" target:self selector:@selector(_refreshSpringBoardIcons)];
+		[messagingCenter registerForMessageName:@"respring" target:self selector:@selector(fancyRespring)];
+		[messagingCenter registerForMessageName:@"activateWithTheme" target:self selector:@selector(_activateWithThemeFromMessageName:userInfo:)];
+		[messagingCenter registerForMessageName:@"setObjectForPreference" target:self selector:@selector(_setObjectForPreferenceFromMessageName:userInfo:)];
+		[messagingCenter registerForMessageName:@"getObjectForPreference" target:self selector:@selector(_getObjectForPreferenceFromMessageName:userInfo:)];
+
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveMemoryWarning) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
 		if (!(_preferences = [[NSMutableDictionary alloc] initWithContentsOfFile:self.settingsFilePath]))
 			_preferences = [[NSMutableDictionary alloc] init];
@@ -57,23 +68,40 @@ CHDeclareClass(SpringBoard);
 
 // Preferences
 
-- (id)objectForPreference:(NSString *)preference {
+- (void)_setObjectForPreferenceFromMessageName:(NSString *)messageName userInfo:(NSDictionary *)userInfo {
+	[self _setObject:[userInfo objectForKey:@"value"] forPreference:[userInfo objectForKey:@"preference"]];
+}
+
+- (NSDictionary *)_getObjectForPreferenceFromMessageName:(NSString *)messageName userInfo:(NSDictionary *)userInfo {
+	id result = [self _getObjectForPreference:[userInfo objectForKey:@"preference"]];
+	if (result)
+		return [NSDictionary dictionaryWithObject:result forKey:@"value"];
+	else
+		return [NSDictionary dictionary];
+}
+
+
+
+
+
+
+- (id)_getObjectForPreference:(NSString *)preference {
 	id value = [_preferences objectForKey:preference];
 	return value;
 }
 
-- (void)setObject:(id)value forPreference:(NSString *)preference {
+- (void)_setObject:(id)value forPreference:(NSString *)preference {
 	if (value)
 		[_preferences setObject:value forKey:preference];
 	else
 		[_preferences removeObjectForKey:preference];
 	if ([preference isEqualToString:@"TaskToggleEnabledToggles"]) {
-		[self reloadToggles];
+		[self _reloadToggles];
 	}
-	[self writePreferences];
+	[self _writePreferences];
 }
 
-- (void)writePreferences {
+- (void)_writePreferences {
 	CFURLRef url = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, (CFStringRef)self.settingsFilePath, kCFURLPOSIXPathStyle, NO);
 	CFWriteStreamRef stream = CFWriteStreamCreateWithFile(kCFAllocatorDefault, url);
 	CFRelease(url);
@@ -85,9 +113,9 @@ CHDeclareClass(SpringBoard);
 	
 }
 
--(void)reset {
+-(void)_reset {
 	[_preferences removeAllObjects];
-	[self writePreferences];
+	[self _writePreferences];
 	[self fancyRespring];
 }
 
@@ -114,12 +142,12 @@ CHDeclareClass(SpringBoard);
 }
 
 - (NSString *)currentThemePath {
-	NSString *theme = [self objectForPreference:@"TaskToggleTheme"];
+	NSString *theme = [self _getObjectForPreference:@"TaskToggleTheme"];
 	if (theme == nil) {
-		[self setObject:@"Default" forPreference:@"TaskToggleTheme"];
+		[self _setObject:@"Default" forPreference:@"TaskToggleTheme"];
 		theme = @"Default";
 	}
-	return [[self themePath] stringByAppendingPathComponent:theme];
+	return [self.themePath stringByAppendingPathComponent:theme];
 }
 
 // Utilities
@@ -179,7 +207,7 @@ CHDeclareClass(SpringBoard);
 
 // Actions
 
-- (void)reloadToggles {
+- (void)_reloadToggles {
 	NSLog(@"TaskToggle sez:  I would refresh the toggles right now!");
 	[[DZTaskToggleView sharedView] addFarRightButtons];
 }
@@ -194,7 +222,7 @@ CHDeclareClass(SpringBoard);
 	return [NSArray arrayWithObjects:@"WinterBoard", @"PreferenceLoader", @"TaskToggle", @"DisplayStack", @"Activator", @"IconSuppoert", @"libstatusbar", nil];
 }
 
-- (void)refreshSpringBoardIcons {
+- (void)_refreshSpringBoardIcons {
 	NSLog(@"Refreshing hidden icons...");
 	notify_post("com.libhide.hiddeniconschanged");
 }
@@ -219,6 +247,10 @@ CHDeclareClass(SpringBoard);
 			else
 				system("killall -9 SpringBoard");
 	}];
+}
+
+- (void)_activateWithThemeFromMessageName:(NSString *)message userInfo:(NSDictionary *)userInfo {
+	[self activateTogglesWithThemeName:[userInfo objectForKey:@"name"]];
 }
 
 - (void)activateTogglesWithThemeName:(NSString *)theme {
@@ -405,7 +437,7 @@ CHDeclareClass(SpringBoard);
 		toggleView.frame = CGRectMake(0, self.frame.origin.y, self.frame.size.width * [sharedTaskToggle numPages], self.frame.size.height);
 		[scrollView addSubview:toggleView];
 		if (toggleView.subviews.count <= 1) {
-			[sharedTaskToggle reloadToggles];
+			[sharedTaskToggle _reloadToggles];
 		}
 	}
 }

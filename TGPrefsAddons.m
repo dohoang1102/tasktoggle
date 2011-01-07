@@ -144,8 +144,7 @@
 			}
 				NSLog(@"An extensions!  %@", myDict);
 		}
-
-		[sharedTaskToggle fancyRespring];	
+		[[CPDistributedMessagingCenter centerNamed:@"dizzytech.tasktoggle"] sendMessageName:@"respring" userInfo:nil];
 	}
 }
 

@@ -11,16 +11,17 @@ typedef enum {
 
 +(DZTaskToggleController *)sharedController;
 -(NSString *)localizedString:(NSString *)aString;
--(void)reset;
--(void)writePreferences;
-- (void)reloadToggles;
+-(void)_reset;
+-(void)_writePreferences;
 - (void)removeBannedTogglesFromArray:(NSMutableArray *)array;
-- (void)refreshSpringBoardIcons;
+- (void)_reloadToggles;
+- (void)_refreshSpringBoardIcons;
 - (void)fancyRespring;
-- (id)objectForPreference:(NSString *)preference;
-- (void)setObject:(id)value forPreference:(NSString *)preference;
 - (void)activateTogglesWithThemeName:(NSString *)theme;
 - (NSString *)imageForToggleNamed:(NSString *)name enabled:(BOOL)isEnabled;
+
+- (id)_getObjectForPreference:(NSString *)preference;
+- (void)_setObject:(id)value forPreference:(NSString *)preference;
 
 @property (nonatomic, readonly) NSBundle *mainBundle;
 

@@ -9,7 +9,7 @@
 	if ((self = [super init])) {
 		self.navigationItem.title = [sharedTaskToggle localizedString:@"Manage Toggles"];
 		self.navigationItem.rightBarButtonItem = self.editButtonItem;
-		self.enabledToggles = [[NSMutableArray alloc] initWithArray:[sharedTaskToggle objectForPreference:@"TaskToggleEnabledToggles"]];
+		self.enabledToggles = [[NSMutableArray alloc] initWithArray:[sharedTaskToggle _getObjectForPreference:@"TaskToggleEnabledToggles"]];
 		fileManager = [[NSFileManager alloc] init];
 
 		NSMutableArray *tempArray = [NSMutableArray array];
@@ -136,7 +136,9 @@
 	[_tableView endUpdates];
 	[_tableView reloadData];
 	[[cell.contentView.layer.sublayers objectAtIndex:0] setContents:(id)[[UIImage imageWithContentsOfFile:[sharedTaskToggle imageForToggleNamed:name enabled:enabled]] CGImage]];
-	[sharedTaskToggle setObject:self.enabledToggles forPreference:@"TaskToggleEnabledToggles"];
+	
+	NSDictionary *info = [NSDictionary dictionaryWithObjectsAndKeys:self.enabledToggles, @"value", @"TaskToggleEnabledToggles", @"preference", nil];
+	[[CPDistributedMessagingCenter centerNamed:@"dizzytech.tasktoggle"] sendMessageName:@"setObjectForPreference" userInfo:info];
 }
 
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -152,8 +154,9 @@
 }
 
 - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
-	[self.enabledToggles exchangeObjectAtIndex:toIndexPath.row withObjectAtIndex:fromIndexPath.row];
-	[sharedTaskToggle setObject:self.enabledToggles forPreference:@"TaskToggleEnabledToggles"];	
+	[self.enabledToggles exchangeObjectAtIndex:toIndexPath.row withObjectAtIndex:fromIndexPath.row];	
+	NSDictionary *info = [NSDictionary dictionaryWithObjectsAndKeys:self.enabledToggles, @"value", @"TaskToggleEnabledToggles", @"preference", nil];
+	[[CPDistributedMessagingCenter centerNamed:@"dizzytech.tasktoggle"] sendMessageName:@"setObjectForPreference" userInfo:info];
 }
 
 @end

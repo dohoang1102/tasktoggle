@@ -1,3 +1,9 @@
+ifeq ($(shell [ -f ./theos/makefiles/common.mk ] && echo 1 || echo 0),0)
+all clean package install::
+	git submodule update --init --recursive
+	$(MAKE) $(MAKEFLAGS) MAKELEVEL=0 $@
+else
+
 # TaskToggle MobileSubstrate extension
 TWEAK_NAME = TaskToggle
 TaskToggle_OBJC_FILES = Tweak.xm
@@ -9,7 +15,7 @@ BUNDLE_NAME = TGPrefs
 TGPrefs_OBJC_FILES = TGPrefsBase.m TGPrefsViewController.m TGPrefsRoot.m TGPrefsToggles.m TGPrefsTheme.m TGPrefsSelf.m TGPrefsPoof.m TGPrefsAddons.m TGPrefsSystem.m TGPrefsWeb.m TGPrefsUtilities.m
 TGPrefs_INSTALL_PATH = /Library/PreferenceBundles
 TGPrefs_FRAMEWORKS = UIKit CoreGraphics QuartzCore
-TGPrefs_PRIVATE_FRAMEWORKS = Preferences
+TGPrefs_PRIVATE_FRAMEWORKS = AppSupport Preferences
 TGPrefs_LDFLAGS = $(FW_OBJ_DIR)/TaskToggle.dylib
 
 include theos/makefiles/common.mk
@@ -24,3 +30,5 @@ internal-stage::
 	mkdir -p $(THEOS_STAGING_DIR)/Library/TaskToggle/Themes
 	mkdir -p $(THEOS_STAGING_DIR)/Library/TaskToggle/Toggles
 	- find $(THEOS_STAGING_DIR) -iname '*.plist' -or -iname '*.strings' -exec plutil -convert binary1 {} \;
+
+endif
