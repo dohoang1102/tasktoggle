@@ -1,9 +1,3 @@
-ifeq ($(shell [ -f ./framework/makefiles/common.mk ] && echo 1 || echo 0),0)
-all clean package install::
-	git submodule update --init --recursive
-	$(MAKE) $(MAKEFLAGS) MAKELEVEL=0 $@
-else
-
 # TaskToggle MobileSubstrate extension
 TWEAK_NAME = TaskToggle
 TaskToggle_OBJC_FILES = Tweak.xm
@@ -30,5 +24,3 @@ internal-stage::
 	mkdir -p $(THEOS_STAGING_DIR)/Library/TaskToggle/Themes
 	mkdir -p $(THEOS_STAGING_DIR)/Library/TaskToggle/Toggles
 	- find $(THEOS_STAGING_DIR) -iname '*.plist' -or -iname '*.strings' -exec plutil -convert binary1 {} \;
-
-endif

@@ -8,4 +8,3 @@ Common.h
 *.dylib
 .debmake
 .theos
-theos
