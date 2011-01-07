@@ -1,0 +1,20 @@
+#!/bin/sh
+
+declare -a cydia
+cydia=($CYDIA)
+
+for a in Themes Toggles Commands; do
+	if [ -h "/var/mobile/Library/SBSettings/$a" ]; then
+		rm -fr /var/mobile/Library/SBSettings/$a
+		mkdir -p /var/mobile/Library/SBSettings/$a
+		mv /Library/TaskToggle/$a/* /var/mobile/Library/SBSettings/$a/
+	fi
+done
+
+if [[ $1 == remove ]]; then
+    if [[ ${CYDIA+@} ]]; then
+        eval "echo 'finish:restart' >&${cydia[0]}"
+    fi
+fi
+
+exit 0

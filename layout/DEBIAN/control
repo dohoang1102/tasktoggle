@@ -1,0 +1,13 @@
+Package: com.dizzytech.tasktoggle
+Name:  TaskToggle
+Depends:  mobilesubstrate, libhide, sbsettingstoggles (>= 3.0.5), shell-cmds, firmware (>= 4.0), preferenceloader (>= 2.0.2)
+Version: 0.0.7
+Priority: optional
+Architecture: iphoneos-arm
+Maintainer: Zachary Waldowski <zwaldowski@gmail.com>
+Author: Zachary Waldowski <zwaldowski@gmail.com>
+Description: SBSettings replacement using the task switcher
+Section: System
+Replaces: sbsettings
+Provides: sbsettings
+dev: zwaldowski

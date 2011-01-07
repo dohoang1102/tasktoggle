@@ -1,0 +1,10 @@
+The working (very very very buggy) branch for TaskToggle, an in-progress SBSettings alternative.  TaskToggle intends to replace the older package entirely (e.g., you install it, then remove SBSettings) while providing full compatibility with existing toggles and partial compatibility with themes.  Designed with iPad and iPhone 4 in mind, including a Preference Loader-based system for editing the same options SBSettings.app currently allows.
+
+Borrows liberally design-wise (being my first tweak; rather ambitious, eh?) from Ryan Petrich's brilliant LibActivator.  Neat stuff.
+
+Hopefully, showing it off to others will get me to commit more and more often.  We'll see how this goes.
+
+Oh, and this is unfinished.
+
+This software is provided with no warranty, blah blah blah.  I'll nail down a license later.
+

@@ -1,0 +1,7 @@
+entry = {
+  bundle = TGPrefs;
+  cell = PSLinkCell;
+  icon = icon.png;
+  isController = 1;
+  label = TaskToggle;
+};
