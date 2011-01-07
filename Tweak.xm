@@ -11,7 +11,7 @@ DZTaskToggleController *sharedTaskToggle;
 
 CHDeclareClass(SBAppSwitcherController);
 CHDeclareClass(SBAppSwitcherBarView);
-CHDeclareClass(SBIcon);
+CHDeclareClass(SBNowPlayingBarView);
 CHDeclareClass(SBUIController);
 CHDeclareClass(SpringBoard);
 
@@ -413,10 +413,10 @@ CHDeclareClass(SpringBoard);
 	UIScrollView *scrollView = CHIvar(self, _scrollView, UIScrollView *);
 	CGFloat offset = self.frame.size.width * [sharedTaskToggle numPages];
 	for (UIView *subview in scrollView.subviews) {
-		if (![subview isEqual:[DZTaskToggleView sharedView]]) {
-			CGRect frame = subview.frame;
+		if ([subview isKindOfClass:CHClass(SBNowPlayingBarView)]) {
+			CGRect frame = [subview frame];
 			frame.origin.x += offset;
-			subview.frame = frame;
+			[subview setFrame:frame];
 		}
 	}
 }
@@ -440,6 +440,11 @@ CHDeclareClass(SpringBoard);
 			[sharedTaskToggle _reloadToggles];
 		}
 	}
+}
+
+-(CGRect)_iconFrameForIndex:(unsigned)index withSize:(CGSize)size {
+	unsigned iconOffset = [self _iconCountForWidth:self.frame.size.width];
+	return %orig(index + iconOffset, size);
 }
 
 -(void)scrollViewDidScroll:(id)scrollView {
@@ -469,7 +474,7 @@ CHConstructor
 	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, &SBSCompat_RefreshToggles, (CFStringRef)@"com.sbsettings.refreshalltoggles", NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
 	CHLoadLateClass(SBAppSwitcherBarView);
 	CHLoadLateClass(SBAppSwitcherController);
-	CHLoadLateClass(SBIcon);
+	CHLoadLateClass(SBNowPlayingBarView);
 	CHLoadLateClass(SBUIController);
 	CHLoadLateClass(SpringBoard);
 	[pool release];
