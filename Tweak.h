@@ -1,3 +1,5 @@
+#import <UIKit/UIKit.h>
+
 typedef enum {
     DZTaskToggleVersion_0_5 = 0050000,
     DZTaskToggleVersion_1_0 = 1000000,
@@ -17,7 +19,7 @@ typedef enum {
 - (void)_reloadToggles;
 - (void)_refreshSpringBoardIcons;
 - (void)fancyRespring;
-- (void)activateTogglesWithThemeName:(NSString *)theme;
+- (void)activateToggles:(NSString *)theme;
 - (NSString *)imageForToggleNamed:(NSString *)name enabled:(BOOL)isEnabled;
 
 - (id)_getObjectForPreference:(NSString *)preference;

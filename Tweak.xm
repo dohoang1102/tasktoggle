@@ -250,19 +250,19 @@ CHDeclareClass(SpringBoard);
 }
 
 - (void)_activateWithThemeFromMessageName:(NSString *)message userInfo:(NSDictionary *)userInfo {
-	[self activateTogglesWithThemeName:[userInfo objectForKey:@"name"]];
+	[self activateToggles:[userInfo objectForKey:@"name"]];
 }
 
-- (void)activateTogglesWithThemeName:(NSString *)theme {
+- (void)activateToggles:(NSString *)theme {
 	NSLog(@"Activating with theme:  %@", theme);
 	if (theme) {
 		
 	}
 	NSLog(@"Variables:  %p %p", SBApp, CHSharedInstance(SBUIController));
 	[CHSharedInstance(SBUIController) activateSwitcher];
-	//SBAppSwitcherBarView *bar = CHIvar(CHSharedInstance(SBAppSwitcherController), _bottomBar, SBAppSwitcherBarView *);
-	//UIScrollView *scroll = CHIvar(bar, _scrollView, UIScrollView *);
-	//[scroll setContentOffset:CGPointMake(0,0) animated:NO];	
+	SBAppSwitcherBarView *bar = CHIvar(CHSharedInstance(SBAppSwitcherController), _bottomBar, SBAppSwitcherBarView *);
+	UIScrollView *scroll = CHIvar(bar, _scrollView, UIScrollView *);
+	[scroll setContentOffset:CGPointMake(0,0) animated:NO];	
 }
 
 // Button actions
@@ -291,10 +291,10 @@ CHDeclareClass(SpringBoard);
 			case 3: [SBApp relaunchSpringBoard]; break; // safe mode
 			//case 4: [(SpringBoard *)[UIApplication sharedApplication] relaunchSpringBoard]; break; // respring	
 			case 4: [self fancyRespring]; break; // respring	
-			default: case 0: [self activateTogglesWithThemeName:nil]; break; // cancel
+			default: case 0: [self activateToggles:nil]; break; // cancel
 		}
 	} else if (actionSheet.tag == 2) {
-		
+		[self activateToggles:nil];
 	}
 }
 

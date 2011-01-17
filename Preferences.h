@@ -50,7 +50,6 @@ extern DZTaskToggleController *sharedTaskToggle;
 	BOOL _orderChanged;
 	NSArray *_cachedArray;
 }
-@property (nonatomic, readonly) NSArray *toggleArray;
 @property (nonatomic, retain) NSMutableArray *enabledToggles;
 @property (nonatomic, retain) NSMutableArray *disabledToggles;
 @end

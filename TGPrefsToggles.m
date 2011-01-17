@@ -25,6 +25,7 @@
 		[sharedTaskToggle removeBannedTogglesFromArray:tempArray];
 		[tempArray removeObjectsInArray:self.enabledToggles];
 		self.disabledToggles = tempArray;
+		NSLog(@"Well:  %@", self.enabledToggles, self.disabledToggles);
 	}
 	return self;
 }
@@ -37,27 +38,12 @@
 	[super dealloc];
 }
 
-- (NSArray *)toggleArray {
-	if ((_cachedCount != self.enabledToggles.count) || _orderChanged) {
-		NSMutableArray *tempMix = [[NSMutableArray alloc] init];
-		[self.disabledToggles sortUsingSelector:@selector(caseInsensitiveCompare:)];
-		[tempMix addObjectsFromArray:self.enabledToggles];
-		[tempMix addObjectsFromArray:self.disabledToggles];
-		if (_cachedArray) [_cachedArray release];
-		_cachedArray = [[tempMix copy] retain];
-		[tempMix release];
-		_cachedCount = self.enabledToggles.count;
-		_orderChanged = NO;
-	}
-	return _cachedArray;
-}
-
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 	return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return [self.toggleArray count];
+	return (self.enabledToggles.count + self.disabledToggles.count);
 }
 
 - (void)setEditing:(BOOL)isEditing animated:(BOOL)animated {
@@ -79,7 +65,12 @@
 		[optionSwitch release];
 	}
 
-	NSString *name = [self.toggleArray objectAtIndex:indexPath.row];
+	NSString *name;
+	if (indexPath.row > self.enabledToggles.count) {
+		name = [self.disabledToggles objectAtIndex:(indexPath.row - self.enabledToggles.count)];
+	} else {
+		name = [self.enabledToggles objectAtIndex:indexPath.row];
+	}
 	BOOL enabled = ([self.enabledToggles indexOfObject:name] != NSNotFound);
 	cell.textLabel.text = name;
 	cell.selectionStyle = UITableViewCellSelectionStyleNone;
