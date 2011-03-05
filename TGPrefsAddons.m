@@ -31,7 +31,6 @@
 				extName, @"Name",
 				extPath, @"Path",
 				extExists, @"Enabled",
-				extExists, @"Default",
 				[NSNumber numberWithBool:NO], @"Changed",
 			nil];
 			
@@ -86,7 +85,7 @@
 	}
 	[myDict setObject:([NSNumber numberWithBool:sender.on]) forKey:@"Enabled"];
 	if (_numberChanged > 0) {
-		if (_numberChanged == 1) {
+		if ((_numberChanged == 1) || (_buttonsChanged == NO)) {
 	        UIBarButtonItem *respringButton = [[UIBarButtonItem alloc] initWithTitle:@"Respring" style:UIBarButtonItemStyleDone target:self action:@selector(settingsConfirmButtonClicked:)];
 	        UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(settingsConfirmButtonClicked:)];
 	        cancelButton.tag = 0;
@@ -95,6 +94,7 @@
 	        [self.navigationItem setRightBarButtonItem:cancelButton animated:YES];
 	        [respringButton release];
 	        [cancelButton release];
+	        _buttonsChanged = YES;
 		}
 	} else {
 		[self cancel:NO];
@@ -111,13 +111,17 @@
 			UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
 			if ([cell.accessoryView isKindOfClass:[UISwitch class]]) {
 				UISwitch *aSwitch = (UISwitch *)cell.accessoryView;
-				[aSwitch setOn:[[[extensions objectAtIndex:i] objectForKey:@"Default"] boolValue] animated:YES];
+				if ([[[extensions objectAtIndex:i] objectForKey:@"Changed"] boolValue]) {
+					[aSwitch setOn:![[[extensions objectAtIndex:i] objectForKey:@"Enabled"] boolValue] animated:YES];
+					[self _toggleSettingsChanged:aSwitch];
+				}
 			}
 		}
 	}
 
 	[[self navigationItem] setLeftBarButtonItem:nil animated:YES];
 	[[self navigationItem] setRightBarButtonItem:nil animated:YES];
+	_buttonsChanged = NO;
 }
 
 - (BOOL)shouldOverrideNavigationButtons {
@@ -136,13 +140,10 @@
 
 		for (NSMutableDictionary *myDict in extensions) {
 			if ([[myDict objectForKey:@"Changed"] boolValue]) {
-				NSString *extName = [myDict objectForKey:@"Name"];
-				BOOL change = [[myDict objectForKey:@"Enabled"] boolValue];
-				NSString *oldPath = [NSString stringWithFormat:@"%@/%@.%@", sharedTaskToggle.extensionPath, extName, (change) ? @"disabled" : @"dylib"];
-				NSString *newPath = [NSString stringWithFormat:@"%@/%@.%@", sharedTaskToggle.extensionPath, extName, (change) ? @"dylib" : @"disabled"];
-				[fileManager moveItemAtPath:oldPath toPath:newPath error:nil];
+				NSString *extName = [myDict objectForKey:@"Name"];				
+				NSString *command = [NSString stringWithFormat:@"/usr/libexec/tasktoggle/setuid /usr/libexec/tasktoggle/toggle_dylib.sh %@", extName];
+				system([command UTF8String]);
 			}
-				NSLog(@"An extensions!  %@", myDict);
 		}
 		[[CPDistributedMessagingCenter centerNamed:@"dizzytech.tasktoggle"] sendMessageName:@"respring" userInfo:nil];
 	}

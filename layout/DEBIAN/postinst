@@ -10,6 +10,8 @@ for a in Themes Toggles Commands; do
 	fi
 done
 
+chown -R root:wheel /usr/libexec/tasktoggle
+
 if [[ ${CYDIA+@} ]]; then
 	eval "echo 'finish:restart' >&${cydia[0]}"
 fi

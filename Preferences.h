@@ -74,6 +74,7 @@ extern DZTaskToggleController *sharedTaskToggle;
 	NSArray *extensions;
 	NSArray *extensionsBackup;
 	NSMutableArray *enabledExtensions;
+	BOOL _buttonsChanged;
 }
 - (void)cancel:(BOOL)usesBackup;
 - (void) navigationButtonPressed:(int)buttonIndex;

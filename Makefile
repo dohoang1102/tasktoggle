@@ -18,9 +18,14 @@ TGPrefs_FRAMEWORKS = UIKit CoreGraphics QuartzCore
 TGPrefs_PRIVATE_FRAMEWORKS = AppSupport Preferences
 TGPrefs_LDFLAGS = $(FW_OBJ_DIR)/TaskToggle.dylib
 
+TOOL_NAME := setuid
+setuid_C_FILES = setuid.c
+setuid_PACKAGE_TARGET_DIR = /usr/libexec/tasktoggle
+
 include theos/makefiles/common.mk
 include theos/makefiles/tweak.mk
 include theos/makefiles/bundle.mk
+include theos/makefiles/tool.mk
 
 stage::
 	$(ECHO_NOTHING)rsync -a "$(FW_PROJECT_DIR)/localization/" "$(FW_STAGING_DIR)/Library/TaskToggle/" $(FW_RSYNC_EXCLUDES)$(ECHO_END)
@@ -29,6 +34,8 @@ internal-stage::
 	mkdir -p $(THEOS_STAGING_DIR)/Library/TaskToggle/Commands
 	mkdir -p $(THEOS_STAGING_DIR)/Library/TaskToggle/Themes
 	mkdir -p $(THEOS_STAGING_DIR)/Library/TaskToggle/Toggles
+	chmod ug+s $(THEOS_STAGING_DIR)/usr/libexec/tasktoggle/setuid
+	chmod ug+s $(THEOS_STAGING_DIR)/usr/libexec/tasktoggle/toggle_dylib.sh
 	- find $(THEOS_STAGING_DIR) -iname '*.plist' -or -iname '*.strings' -exec plutil -convert binary1 {} \;
 
 endif
