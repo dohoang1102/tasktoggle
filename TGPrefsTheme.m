@@ -57,7 +57,7 @@
 	cell.textLabel.text = cellName;
 	NSString *path = [[sharedTaskToggle.themePath stringByAppendingPathComponent:cellName] stringByAppendingPathComponent:@"blankon.png"];
 	cell.imageView.image = [UIImage imageWithContentsOfFile:path];
-	cell.imageView.frame = CGRectMake(8.0f, 8.0f, 44.0f, 44.0f);
+	cell.imageView.frame = CGRectMake(9.0f, 9.0f, 42.0f, 42.0f);
 	cell.selectionStyle = UITableViewCellSelectionStyleNone;
 	cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
 	return cell;

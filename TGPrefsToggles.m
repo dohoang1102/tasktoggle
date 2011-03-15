@@ -25,7 +25,6 @@
 		[sharedTaskToggle removeBannedTogglesFromArray:tempArray];
 		[tempArray removeObjectsInArray:self.enabledToggles];
 		self.disabledToggles = tempArray;
-		NSLog(@"Well:  %@", self.enabledToggles, self.disabledToggles);
 	}
 	return self;
 }
@@ -34,7 +33,6 @@
 	[fileManager release]; fileManager = nil;
 	self.enabledToggles = nil;
 	self.disabledToggles = nil;
-	[_cachedArray release]; _cachedArray = nil;
 	[super dealloc];
 }
 
@@ -43,7 +41,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return (self.enabledToggles.count + self.disabledToggles.count);
+	return self.enabledToggles.count + self.disabledToggles.count;
 }
 
 - (void)setEditing:(BOOL)isEditing animated:(BOOL)animated {
@@ -64,16 +62,19 @@
 		cell.accessoryView = optionSwitch;
 		[optionSwitch release];
 	}
+	
+	//NSLog(@"%@ %@ %i %i", self.enabledToggles, self.disabledToggles, indexPath.row, self.enabledToggles.count);
 
 	NSString *name;
-	if (indexPath.row > self.enabledToggles.count) {
-		name = [self.disabledToggles objectAtIndex:(indexPath.row - self.enabledToggles.count)];
+	if (indexPath.row >= self.enabledToggles.count) {
+		name = [self.disabledToggles objectAtIndex:indexPath.row - self.enabledToggles.count];
 	} else {
 		name = [self.enabledToggles objectAtIndex:indexPath.row];
 	}
-	BOOL enabled = ([self.enabledToggles indexOfObject:name] != NSNotFound);
 	cell.textLabel.text = name;
 	cell.selectionStyle = UITableViewCellSelectionStyleNone;
+	
+	BOOL enabled = ([self.enabledToggles indexOfObject:name] != NSNotFound);
 	[(UISwitch *)cell.accessoryView setTag:indexPath.row];
 	[(UISwitch *)cell.accessoryView setOn:enabled];
 	
@@ -122,7 +123,9 @@
 		[tableUpdates addObject:[NSIndexPath indexPathForRow:newIndexPath.row-1 inSection:0]];
 	if (newIndexPath.row != max)
 		[tableUpdates addObject:[NSIndexPath indexPathForRow:newIndexPath.row+1 inSection:0]];
-	[_tableView reloadRowsAtIndexPaths:tableUpdates withRowAnimation:UITableViewRowAnimationFade];*/
+	[_tableView reloadRowsAtIndexPaths:tableUpdates withRowAnimation:UITableViewRowAnimationFade];
+	*/
+	
 	[_tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
 	[_tableView endUpdates];
 	[_tableView reloadData];
@@ -142,6 +145,7 @@
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
 	return (indexPath.row < self.enabledToggles.count);
+	//return NO;
 }
 
 - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {

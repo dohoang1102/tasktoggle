@@ -30,7 +30,7 @@ CHDeclareClass(SpringBoard);
 	if ((self = [super init])) {
 		CPDistributedMessagingCenter *messagingCenter = [CPDistributedMessagingCenter centerNamed:@"dizzytech.tasktoggle"];
 		[messagingCenter runServerOnCurrentThread];
-		// Remote messages to id<LAListener> (with event)
+
 		[messagingCenter registerForMessageName:@"resetPreferences" target:self selector:@selector(_reset)];
 		[messagingCenter registerForMessageName:@"reloadToggles" target:self selector:@selector(_reloadToggles)];
 		[messagingCenter registerForMessageName:@"reloadIcons" target:self selector:@selector(_refreshSpringBoardIcons)];
@@ -91,6 +91,7 @@ CHDeclareClass(SpringBoard);
 }
 
 - (void)_setObject:(id)value forPreference:(NSString *)preference {
+	NSLog(@"objects:  %@ %@", value, preference);
 	if (value)
 		[_preferences setObject:value forKey:preference];
 	else
